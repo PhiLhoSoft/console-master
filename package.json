@@ -3,29 +3,57 @@
   "displayName": "Console Master",
   "description": "Add and manage JS console calls",
   "version": "0.0.1",
-  "publisher": "PhiLhoSoft",
-  "engines": {
-    "vscode": "^1.52.0"
-  },
-  "categories": [
-    "Other"
-  ],
+	"publisher": "PhiLhoSoft",
+	"license": "MIT",
+  "engines": { "vscode": "^1.52.0" },
+  "categories": ["Snippets", "Other"],
   "activationEvents": [
-    "onCommand:console-master.addConsole"
+    "onCommand:consoleMaster.addConsole"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "console-master.addConsole",
+        "command": "consoleMaster.addConsole",
         "title": "Console Master: add console.log"
       }
     ],
     "keybindings": [{
       "key": "ctrl+shift+l",
       "mac": "cmd+shift+l",
-      "command": "console-master.addConsole"
-    }]
+      "command": "consoleMaster.addConsole"
+    }],
+    "configuration": {
+      "title": "Console Master",
+      "properties": {
+        "consoleMaster.addSemicolon": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add a semicolon at the end of the added line."
+        },
+        "consoleMaster.quoteCharacter": {
+          "type": "string",
+          "enum": [ "\"", "'", "`" ],
+          "default": "'",
+          "enumDescriptions": [
+            "Enclose message with double quotes",
+            "Enclose message with single quotes",
+            "Enclose message with backticks"
+          ],
+          "description": "Quote style: double quotes, single quotes or backticks"
+        },
+        "consoleMaster.addFileNameAndLineNumber": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add the file name and the line number to the message."
+        },
+        "consoleMaster.elementSeparator": {
+          "type": "string",
+          "default": "#",
+          "description": "Separates the different message elements (file name, line number, class, function and variable names)"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
