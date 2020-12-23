@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below.
 import * as vscode from 'vscode';
 
-import { isSelectionEmpty } from './functions';
+import { isCaretOnIdentifier, isSelectionEmpty } from './functions';
 
 // This method is called when your extension is activated.
 // Your extension is activated the very first time the command is executed.
@@ -40,10 +40,18 @@ export function activate(context: vscode.ExtensionContext)
 			let selectedText = document.getText(selection);
 
 			// If no selection, try to get the word under the caret.
-			if (isSelectionEmpty(selection))
+			let insertEmpty = false;
+			if (isSelectionEmpty(selection) && isCaretOnIdentifier(lineText, selection.start.character))
 			{
 				// selectedText = getIdentifierUnderCaret(lineText, start.character, 'includeThis');
 				selectedText = document.getText(document.getWordRangeAtPosition(selection.start, /[\w$.!?]+/));
+			}
+			else
+			{
+				// Maybe with a setting, if requested.
+				// With this case, we insert the console statement right where the caret is, without newline nor semicolon.
+				// Eg. we might want it at the ~ place: `tap(() => ~)`
+				insertEmpty = true;
 			}
 
 			let fileName = '';
@@ -51,35 +59,47 @@ export function activate(context: vscode.ExtensionContext)
 			{
 				// Take name at the end of the full path (Windows / Posix)
 				const documentFileName = document.fileName.replace(/^.*[\\/]([^\\//]+)$/, '$1');
-				fileName = `${documentFileName} (${start.line}) ${elementSeparator}`;
+				fileName = insertEmpty ?
+					`${documentFileName} (${start.line})` :
+					`${documentFileName} (${start.line}) ${elementSeparator}`;
 			}
 
 			// Take whitespace at the start of the line (spaces or tabs, whatever).
 			const indentation = lineText.slice(0, currentLine.firstNonWhitespaceCharacterIndex);
 
-			const insertPosition = new vscode.Position(start.line + 1, 0);
+			const insertPosition = insertEmpty ? start : new vscode.Position(start.line + 1, 0);
 
 			editor.edit(
 				(edit: vscode.TextEditorEdit) =>
 				{
 					edit.insert(insertPosition,
-						`${
-							indentation
-						}console.log(${
-							quoteCharacter
-						}${
-							fileName
-						} ${
-							selectedText
-						}${
-							quoteCharacter
-						}, ${
-							selectedText
-						})${
-							addSemicolon ? ';' : ''
-						}${
-							eol === vscode.EndOfLine.LF ? '\n' : '\r\n'
-						}`);
+						insertEmpty ?
+							`console.log(${
+								quoteCharacter
+							}${
+								fileName
+							}${
+								quoteCharacter
+							})`
+						:
+							`${
+								indentation
+							}console.log(${
+								quoteCharacter
+							}${
+								fileName
+							} ${
+								selectedText
+							}${
+								quoteCharacter
+							}, ${
+								selectedText
+							})${
+								addSemicolon ? ';' : ''
+							}${
+								eol === vscode.EndOfLine.LF ? '\n' : '\r\n'
+							}`
+					);
 				}
 			);
 
