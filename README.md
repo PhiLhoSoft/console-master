@@ -1,65 +1,90 @@
 # console-master README
 
-This is the README for your extension "console-master". After writing up a brief description, we recommend including the following sections.
+This extension for VSC (Visual Studio Code) aims to provide a quick and easy way to insert a console message into a source code (designed for JS / TS, but might be usable with other languages in the future).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Out of the box, the extension offers to insert a `console.log` call just below the line where the caret is.
+The call has, by default, a message with file name and the line number where the caret was, and if an identifier was selected, or the caret was in such identifier, the identifier name is inserted in the message, and added at the end of the call, as parameter.
 
-For example if there is an image subfolder under your extension project workspace:
+For example, given the following code snippet:
+```typescript
+	if (keySource in recordSource) {
+		const value = recordSource[keySource];
+		if (value === undefined || (typeof value === 'string' && value.length === 0)) {
+			return;
+		}
+		recordTarget[keyTarget] = value;
+	}
+```
+If the caret is in the `value` declaration, when you hit Ctrl+Shift+L (Cmd+Shift+L on Mac), you will get the following line below the declaration:
+```typescript
+		console.log('functions.ts (25) # value', value);
+```
+If the user selects `recordTarget[keyTarget]`, the inserted line, below the selection, will be:
+```typescript
+		console.log('functions.ts (29) # recordTarget[keyTarget]', recordTarget[keyTarget]);
+```
+In some cases, console-master can autoselect the variable. For example, in the following code snippet:
+```typescript
+	const textarea = document.createElement('textarea');
+	textarea.value = text;
+	textarea.style.position = 'fixed'; // Avoid scrolling to bottom of page in Microsoft Edge.
+	document.body.appendChild(textarea);
+	textarea.select();
+```
+if the caret is on `position`, you will get:
+```typescript
+	console.log('service.ts (55) # textarea.style.position', textarea.style.position);
+```
 
-\!\[feature X\]\(images/feature-x.png\)
+Lastly, if there is no selection, and if the caret isn't on an identifier, console-master will insert a simplified call, to be filled by yourself.
+For example, with the snippet:
+```typescript
+	readonly isAuthenticated$ = this.authenticationState$.pipe(
+		tap((state) => ~),
+		map((state) => state === 'AUTHENTICATED'),
+		distinctUntilChanged(),
+	);
+```
+(the ~ marks the caret position), after typing the shortcut, you will have the following line:
+```typescript
+		tap((state) => console.log('service.ts (133)'))
+```
+Ie. no identifier, no semicolon (even if the setting says otherwise), you can add yourself the `state` variable or other information if you need it.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Motivation
+
+Why use these primitive logs when you can just put some breakpoints, trace runs, and examine variables?
+I find this useful for various reasons, particularly when dealing with asynchronous events (primitives, RxJS flow): in these cases, sometime, stopping the process can break it, particularly if relying on timing.
+It is also useful to trace complex data, to study how the various events are laid out (one before the other?), to log data variations over time, and so on.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+No special requirements, should work out of the box in any text editor of VSC.
 
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
+## Extension settings
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `consoleMaster.addSemicolon`: if true (default), add a semicolon at the end of the added line.
+* `consoleMaster.quoteCharacter`: quotes around the message. Defaults to single quote, can be that, double quote or backticks.
+* `addFileNameAndLineNumber`: if true (default), add the file name and the line number to the message.
+* `consoleMaster.elementSeparator`: a character to separate the different message elements (file name, line number and selected variable name). Default to `#`.
 
-## Known Issues
+## Known issues and limitations
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Currently, it is relative inflexible, despite its options.
+In the future, it should give more liberty for the user and their preferences.
 
-## Release Notes
+## Planned features
 
-Users appreciate release notes as you update your extension.
+- Commands to comment out, uncomment, and remove all the console calls in the opened buffer.
+- A command to offer various choices, and insert the customized console call (group, time, etc.).
+- Perhaps, in TS / JS source code, detect the function name / class name where the caret is, to add them to the message, and add after the sentence, not just the line.
 
-### 1.0.0
+## Release notes
 
-Initial release of ...
+### 0.1.0
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release of console-master.

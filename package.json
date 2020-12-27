@@ -2,11 +2,24 @@
   "name": "console-master",
   "displayName": "Console Master",
   "description": "Add and manage JS console calls",
-  "version": "0.0.1",
-	"publisher": "PhiLhoSoft",
-	"license": "MIT",
+  "icon": "assets/icons/console-master.png",
+  "version": "0.1.0",
+  "publisher": "PhiLhoSoft",
+  "repository": {
+		"type": "git",
+    "url": "https://github.com/PhiLhoSoft/console-master.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PhiLhoSoft/console-master/issues"
+  },
+  "homepage": "https://PhiLhoSoft.github.io/",
+  "license": "MIT",
   "engines": { "vscode": "^1.52.0" },
   "categories": ["Snippets", "Other"],
+  "keywords": [
+    "console",
+    "logging"
+  ],
   "activationEvents": [
     "onCommand:consoleMaster.addConsole"
   ],
@@ -21,7 +34,8 @@
     "keybindings": [{
       "key": "ctrl+shift+l",
       "mac": "cmd+shift+l",
-      "command": "consoleMaster.addConsole"
+      "command": "consoleMaster.addConsole",
+      "when": "editorTextFocus && !editorReadonly"
     }],
     "configuration": {
       "title": "Console Master",
