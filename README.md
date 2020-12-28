@@ -4,7 +4,7 @@ This extension for VSC (Visual Studio Code) aims to provide a quick and easy way
 
 ## Features
 
-Out of the box, the extension offers to insert a `console.log` call just below the line where the caret is.
+Out of the box, the extension offers to insert a `console.log` call just below the line where the caret is (or where the carets are, the extension supports multiple carets / selections) with just a keyboard shortcut.
 The call has, by default, a message with the file name and the line number where the caret is, and if an identifier was selected, or the caret was in such identifier, the identifier itself. The identifier is also added as a parameter of the function call.
 
 For example, given the following code snippet:
@@ -95,6 +95,10 @@ In the future, it should give more liberty for the user and their preferences.
 
 ## Release notes
 
+### 1.0.0
+
+- Handle multiple cursors.
+- Various refactors for code flexibility and some fixes.
 ### 0.1.0
 
 Initial release of Console Master.

@@ -6,7 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.0] - 2020-12-28
+
 - Refactor code for more flexibility.
+- Handle multiple cursors.
 
 ## [0.1.0] - 2020-12-28
 

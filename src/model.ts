@@ -20,6 +20,7 @@ export type LineContext =
 	lineNumber: number,
 	indentation: string,
 	selectedText: string,
+	insertPosition: vscode.Position,
 };
 
 export type TemplateVariables = Configuration & DocumentContext & LineContext;
