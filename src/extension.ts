@@ -2,109 +2,77 @@
 // Import the module and reference it with the alias vscode in your code below.
 import * as vscode from 'vscode';
 
-import { isCaretOnIdentifier, isSelectionEmpty } from './functions';
+import { buildEmptyConsoleLog, buildFullConsoleLog, isCaretOnIdentifier } from './functions';
+import { DocumentContext, LineContext, readConfiguration } from './model';
 
 // This method is called when your extension is activated.
 // Your extension is activated the very first time the command is executed.
 export function activate(context: vscode.ExtensionContext)
 {
-	// Use the console to output diagnostic information (console.log) and errors (console.error).
-	// This line of code will only be executed once when your extension is activated.
-	// console.log('Congratulations, your extension "console-master" is now active!');
-
-	// The command has been defined in the package.json file.
-	// Now provide the implementation of the command with registerCommand.
-	// The commandId parameter must match the command field in package.json.
 	const disposable = vscode.commands.registerCommand('consoleMaster.addConsole',
 		() =>
 		{
-			// The code you place here will be executed every time your command is executed.
-			const configuration = vscode.workspace.getConfiguration('consoleMaster');
-			const addSemicolon = configuration.get('addSemicolon');
-			const quoteCharacter = configuration.get('quoteCharacter');
-			const addFileNameAndLineNumber = configuration.get('addFileNameAndLineNumber');
-			const elementSeparator = configuration.get('elementSeparator');
+			const configuration = readConfiguration();
+			const documentContext: DocumentContext = {} as DocumentContext;
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) { return; }
+			let selection = editor.selection;
+			if (!selection.isSingleLine)
+			{
+				// Display a message box to the user.
+				vscode.window.showInformationMessage('Console Master: no usable selection.');
+				return;
+			}
 
 			// const { tabSize, insertSpaces } = activeTextEditor.options;
 			const document = editor.document;
 			if (!document) { return; }
-			const eol = document.eol;
+			documentContext.eol = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
+			// Take name at the end of the full path (Windows / Posix)
+			documentContext.fileName = document.fileName.replace(/^.*[\\/]([^\\//]+)$/, '$1');
 
-			let selection = editor.selection;
+			const lineContext: LineContext = {} as LineContext;
 			let { start } = selection;
 			const currentLine = document.lineAt(start.line);
 			const lineText = currentLine.text;
-			let selectedText = document.getText(selection);
+			lineContext.selectedText = document.getText(selection);
 
-			// If no selection, try to get the word under the caret.
 			let insertEmpty = false;
-			if (isSelectionEmpty(selection) && isCaretOnIdentifier(lineText, selection.start.character))
+			// If no selection, try to get the word under the caret.
+			if (lineContext.selectedText === '')
 			{
-				// selectedText = getIdentifierUnderCaret(lineText, start.character, 'includeThis');
-				selectedText = document.getText(document.getWordRangeAtPosition(selection.start, /[\w$.!?]+/));
-			}
-			else
-			{
-				// Maybe with a setting, if requested.
-				// With this case, we insert the console statement right where the caret is, without newline nor semicolon.
-				// Eg. we might want it at the ~ place: `tap(() => ~)`
-				insertEmpty = true;
+				if (isCaretOnIdentifier(lineText, selection.start.character))
+				{
+					// selectedText = getIdentifierUnderCaret(lineText, start.character, 'includeThis');
+					lineContext.selectedText = document.getText(document.getWordRangeAtPosition(selection.start, /[\w$.!?]+/));
+				}
+				else
+				{
+					// With this case, we insert the console statement right where the caret is, without newline nor semicolon.
+					// Eg. we might want it at the ~ place: `tap(() => ~)`
+					// (Maybe will to this with a setting, if requested.)
+					insertEmpty = true;
+				}
 			}
 
-			let fileName = '';
-			if (addFileNameAndLineNumber)
-			{
-				// Take name at the end of the full path (Windows / Posix)
-				const documentFileName = document.fileName.replace(/^.*[\\/]([^\\//]+)$/, '$1');
-				fileName = insertEmpty ?
-					`${documentFileName} (${start.line})` :
-					`${documentFileName} (${start.line}) ${elementSeparator}`;
-			}
+			lineContext.lineNumber = start.line;
 
 			// Take whitespace at the start of the line (spaces or tabs, whatever).
-			const indentation = lineText.slice(0, currentLine.firstNonWhitespaceCharacterIndex);
+			lineContext.indentation = lineText.slice(0, currentLine.firstNonWhitespaceCharacterIndex);
 
 			const insertPosition = insertEmpty ? start : new vscode.Position(start.line + 1, 0);
+
+			const templateVariables = { ...configuration, ...documentContext, ...lineContext };
 
 			editor.edit(
 				(edit: vscode.TextEditorEdit) =>
 				{
 					edit.insert(insertPosition,
-						insertEmpty ?
-							`console.log(${
-								quoteCharacter
-							}${
-								fileName
-							}${
-								quoteCharacter
-							})`
-						:
-							`${
-								indentation
-							}console.log(${
-								quoteCharacter
-							}${
-								fileName
-							} ${
-								selectedText
-							}${
-								quoteCharacter
-							}, ${
-								selectedText
-							})${
-								addSemicolon ? ';' : ''
-							}${
-								eol === vscode.EndOfLine.LF ? '\n' : '\r\n'
-							}`
+						insertEmpty ? buildEmptyConsoleLog(templateVariables) : buildFullConsoleLog(templateVariables)
 					);
 				}
 			);
-
-			// Display a message box to the user.
-			// vscode.window.showInformationMessage('console-master inserted a console.log call!');
 		}
 	);
 

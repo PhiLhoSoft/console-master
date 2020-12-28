@@ -1,14 +1,6 @@
 import * as vscode from 'vscode';
 
-export function isSelectionEmpty(selection: vscode.Selection): boolean
-{
-	return isSelectionOnOneLine(selection) && selection.start.character === selection.end.character;
-}
-
-export function isSelectionOnOneLine(selection: vscode.Selection): boolean
-{
-	return selection.start.line === selection.end.line;
-}
+import { TemplateVariables } from './model';
 
 export function isIdentifierChar(char: string): boolean
 {
@@ -21,6 +13,50 @@ export function isCaretOnIdentifier(line: string, caretIndex: number): boolean
 	return caretIndex > 0 && isIdentifierChar(line.charAt(caretIndex - 1)) ||
 		caretIndex < line.length && isIdentifierChar(line.charAt(caretIndex + 1));
 }
+
+export function buildEmptyConsoleLog(v: TemplateVariables): string
+{
+	return `console.log(${
+			v.quoteCharacter
+		}${
+			buildFileNameAndLineNumber(v)
+		}${
+			v.quoteCharacter
+		})`;
+}
+
+export function buildFullConsoleLog(v: TemplateVariables): string
+{
+	return `${
+			v.indentation
+		}console.log(${
+			v.quoteCharacter
+		}${
+			buildFileNameAndLineNumber(v)
+		}${
+			v.selectedText
+		}${
+			v.quoteCharacter
+		}, ${
+			v.selectedText
+		})${
+			v.addSemicolon ? ';' : ''
+		}${
+			v.eol
+		}`;
+}
+
+export function buildFileNameAndLineNumber(v: TemplateVariables): string
+{
+	if (!v.addFileNameAndLineNumber) { return ''; }
+	if (v.insertEmpty)
+	{
+		return `${v.fileName} (${v.lineNumber})`;
+	}
+	return `${v.fileName} (${v.lineNumber}) ${v.elementSeparator} `;
+}
+
+// Currently not used.
 
 export function getIdentifierUnderCaret(line: string, caretIndex: number, options?: 'includeThis'): string
 {
