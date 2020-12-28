@@ -6,7 +6,7 @@
   "version": "0.1.0",
   "publisher": "PhiLhoSoft",
   "repository": {
-		"type": "git",
+    "type": "git",
     "url": "https://github.com/PhiLhoSoft/console-master.git"
   },
   "bugs": {
@@ -14,8 +14,13 @@
   },
   "homepage": "https://PhiLhoSoft.github.io/",
   "license": "MIT",
-  "engines": { "vscode": "^1.52.0" },
-  "categories": ["Snippets", "Other"],
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "categories": [
+    "Snippets",
+    "Other"
+  ],
   "keywords": [
     "console",
     "logging"
@@ -31,12 +36,14 @@
         "title": "Console Master: add console.log"
       }
     ],
-    "keybindings": [{
-      "key": "ctrl+shift+l",
-      "mac": "cmd+shift+l",
-      "command": "consoleMaster.addConsole",
-      "when": "editorTextFocus && !editorReadonly"
-    }],
+    "keybindings": [
+      {
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
+        "command": "consoleMaster.addConsole",
+        "when": "editorTextFocus && !editorReadonly"
+      }
+    ],
     "configuration": {
       "title": "Console Master",
       "properties": {
@@ -47,7 +54,11 @@
         },
         "consoleMaster.quoteCharacter": {
           "type": "string",
-          "enum": [ "\"", "'", "`" ],
+          "enum": [
+            "\"",
+            "'",
+            "`"
+          ],
           "default": "'",
           "enumDescriptions": [
             "Enclose message with double quotes",
