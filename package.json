@@ -3,7 +3,7 @@
   "displayName": "Console Master",
   "description": "Add and manage JS console calls",
   "icon": "assets/icons/console-master.png",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "PhiLhoSoft",
   "repository": {
     "type": "git",
