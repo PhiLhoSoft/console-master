@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { TemplateVariables } from './model';
+const THIS_SIZE = 5;
 
 export function isIdentifierChar(char: string): boolean
 {
@@ -14,60 +14,16 @@ export function isCaretOnIdentifier(line: string, caretIndex: number): boolean
 		caretIndex < line.length && isIdentifierChar(line.charAt(caretIndex + 1));
 }
 
-export function buildEmptyConsoleLog(v: TemplateVariables): string
-{
-	return `console.log(${
-			v.quoteCharacter
-		}${
-			buildFileNameAndLineNumber(v)
-		}${
-			v.quoteCharacter
-		})`;
-}
-
-export function buildFullConsoleLog(v: TemplateVariables): string
-{
-	return `${
-			v.indentation
-		}console.log(${
-			v.quoteCharacter
-		}${
-			buildFileNameAndLineNumber(v)
-		}${
-			v.selectedText
-		}${
-			v.quoteCharacter
-		}, ${
-			v.selectedText
-		})${
-			v.addSemicolon ? ';' : ''
-		}${
-			v.eol
-		}`;
-}
-
-export function buildFileNameAndLineNumber(v: TemplateVariables): string
-{
-	if (!v.addFileNameAndLineNumber) { return ''; }
-	if (v.insertEmpty)
-	{
-		return `${v.fileName} (${v.lineNumber})`;
-	}
-	return `${v.fileName} (${v.lineNumber}) ${v.elementSeparator} `;
-}
-
-// Currently not used.
-
 export function getIdentifierUnderCaret(line: string, caretIndex: number, options?: 'includeThis'): string
 {
 	let start = caretIndex;
 	let end = caretIndex;
 	while (start > 0 && isIdentifierChar(line.charAt(start - 1))) { start--; }
-	if (options === 'includeThis' && start >= 5)
+	if (options === 'includeThis' && start >= THIS_SIZE)
 	{
-		if (line.slice(start - 5, start) === 'this.')
+		if (line.slice(start - THIS_SIZE, start) === 'this.')
 		{
-			start -= 5;
+			start -= THIS_SIZE;
 		}
 	}
 	while (end < line.length && isIdentifierChar(line.charAt(end + 1))) { end++; }
@@ -76,8 +32,8 @@ export function getIdentifierUnderCaret(line: string, caretIndex: number, option
 
 export function isCaretAfterThis(line: string, caretIndex: number): boolean
 {
-	if (caretIndex < 5) { return false; }
-	const previousChars = line.slice(caretIndex - 5, caretIndex);
+	if (caretIndex < THIS_SIZE) { return false; }
+	const previousChars = line.slice(caretIndex - THIS_SIZE, caretIndex);
 	return previousChars === 'this.';
 }
 

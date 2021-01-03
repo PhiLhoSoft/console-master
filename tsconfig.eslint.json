@@ -1,0 +1,27 @@
+{
+	"extends": "./tsconfig.json",
+	"files":
+	[
+		".eslintrc.js",
+		".eslintrc.style.js",
+		".eslintrc.semantics.js",
+	],
+	"include":
+	[
+		"**/*.ts",
+		"**/*.spec.ts",
+		"**/*.d.ts",
+	],
+	"exclude":
+	[
+		"node_modules/**/*",
+		"out/**/*",
+	],
+	"compilerOptions":
+	{
+		"types":
+		[
+			"node",
+		],
+	},
+}

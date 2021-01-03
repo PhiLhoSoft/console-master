@@ -25,7 +25,8 @@ export type LineContext =
 
 export type TemplateVariables = Configuration & DocumentContext & LineContext;
 
-export function readConfiguration(): Configuration {
+export function readConfiguration(): Configuration
+{
 	const configuration = vscode.workspace.getConfiguration('consoleMaster');
 	const as: boolean | undefined = configuration.get('addSemicolon');
 	const addSemicolon: boolean = as === undefined ? true : as;
