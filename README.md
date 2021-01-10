@@ -99,6 +99,7 @@ In the future, it should give more liberty for the user and their preferences.
 
 - Handle multiple cursors.
 - Various refactors for code flexibility and some fixes.
+
 ### 0.1.0
 
 Initial release of Console Master.

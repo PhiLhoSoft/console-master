@@ -1,0 +1,7 @@
+# /node_modules/* and /bower_components/* in the project root are ignored by default
+
+.vscode/*
+assets/**/*
+out/*
+# Ignore generated tests for now, until I do mine.
+src/test/*

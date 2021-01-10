@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext): void
 							edit.insert(templateVariables.insertPosition,
 								templateVariables.insertEmpty ?
 									buildEmptyConsoleLog(templateVariables) :
-									buildFullConsoleLog(templateVariables)
+									buildFullConsoleLog(templateVariables),
 							);
 						},
 					);

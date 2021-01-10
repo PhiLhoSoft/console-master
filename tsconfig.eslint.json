@@ -14,8 +14,10 @@
 	],
 	"exclude":
 	[
-		"node_modules/**/*",
-		"out/**/*",
+		"node_modules",
+		".vscode-test",
+		"out",
+		"src/test", // Until I do real tests
 	],
 	"compilerOptions":
 	{
